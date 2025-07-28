@@ -1,62 +1,105 @@
-```markdown
 # Adobe Hackathon - Round 1B: Relevance Engine (Offline & Dockerized)
 
 ## Overview
-This project builds on Round 1A’s Structure Extractor to implement a semantic Relevance Engine. Given a collection of PDF documents, a persona, and a job‑to‑be‑done string, it returns a ranked list of the most relevant sections and refined sub‑sections. The pipeline runs entirely offline, on CPU, and is packaged in Docker.
 
-## Project Structure
+This project builds on Round 1A’s **Structure Extractor** to implement a semantic **Relevance Engine**.  
+Given a collection of **PDF documents**, a **persona**, and a **job-to-be-done** string, it returns a ranked list of the most relevant sections and refined sub‑sections.
+
+- Runs entirely **offline**, on **CPU**
+- Packaged in **Docker**
+- Uses locally stored **sentence embedding models**
+
+---
+
+##  Project Structure
+
 ```
-
 1b/
-├── input/                             # Directory containing input PDF files
-├── models/                            # Folder containing downloaded SentenceTransformer model
-│   └── multi-qa-MiniLM-L6-cos-v1/     # Local embedding model files
-├── output/                            # Generated output JSON files
+├── input/                         # Input PDF files
+├── models/                        # Downloaded SentenceTransformer model
+│   └── multi-qa-MiniLM-L6-cos-v1/ # Local embedding model files
+├── output/                        # Output JSON files
 ├── src/
-│   ├── main\_1b.py                     # Entry point for the pipeline
-│   ├── relevance\_engine/
-│   │   └── engine.py                  # RelevanceEngine class with ranking logic
-│   └── structure\_extractor/
-│       └── extractor.py               # StructureExtractor from Round 1A
-├── requirements.txt                   # Python dependencies
-├── Dockerfile                         # Dockerfile for CPU‑only offline execution
-└── README.md                          # This file
-
+│   ├── main_1b.py                 # Pipeline entry point
+│   ├── relevance_engine/
+│   │   └── engine.py              # RelevanceEngine class
+│   └── structure_extractor/
+│       └── extractor.py           # StructureExtractor from Round 1A
+├── requirements.txt               # Python dependencies
+├── Dockerfile                     # CPU-only offline Docker execution
+└── README.md                      # This file
 ```
 
-## Approach Explanation
-### Step 1: Structure Extraction  
-Reuse the StructureExtractor from Round 1A to parse each PDF and extract its outline (Title, H1, H2, H3) with page numbers. For each heading, we extract the full text from that heading to the next heading using PyMuPDF.
+---
 
-### Step 2: Semantic Embedding  
-To capture relevance, we convert text into dense vectors using the `multi-qa-MiniLM-L6-cos-v1` model from the sentence-transformers library. This model is chosen for its small size (~80 MB), fast CPU inference, and high accuracy in semantic similarity tasks. We download it locally and include it in the `models/` folder so that no internet access is required at runtime.
+## ⚙️ Approach Explanation
 
-### Step 3: Query Construction and Section Encoding  
-We concatenate persona and job into a single query string:  
-```
+### 🔹 Step 1: Structure Extraction
 
-"Persona: <persona>. Task: <job-to-be-done>"
+- Uses **StructureExtractor** to parse each PDF.
+- Extracts headings (Title, H1, H2, H3) with page numbers.
+- For each heading, extracts the full text **from that heading to the next** using **PyMuPDF**.
 
-````
-We encode this query into an embedding. For each extracted section, we encode its text into an embedding.
+---
 
-### Step 4: Similarity Scoring and Ranking  
-Compute cosine similarity between the query embedding and each section embedding using `scipy.spatial.distance.cosine`. Lower cosine distance indicates higher relevance. We collect metadata (document name, section title, page number, full text) and similarity scores, then sort all sections in descending order of relevance to produce an `importance_rank` for each.
+### 🔹 Step 2: Semantic Embedding
 
-### Step 5: Sub‑Section Refinement  
-Optionally, we refine within the top N sections by chunking their text into paragraphs or fixed‐length blocks, re‑encoding and re‑ranking those chunks to extract a `refined_text`—the most relevant sub‑section content.
+- Uses `multi-qa-MiniLM-L6-cos-v1` from **sentence-transformers**.
+- Reasons for choosing:
+  - ✅ Small size (~80 MB)
+  - ✅ Fast CPU inference
+  - ✅ High accuracy for semantic similarity
+- Model is downloaded and included in the `models/` folder → **No internet required**.
 
-### Step 6: Output Assembly  
-We assemble a JSON array of ranked sections and refined sub‑sections, each entry containing:
+---
+
+### 🔹 Step 3: Query Construction & Section Encoding
+
+- Combine persona and job:
+  
+  ```
+  Persona: <persona>. Task: <job-to-be-done>
+  ```
+- Encode this query.
+- Encode each extracted section’s text.
+
+---
+
+### 🔹 Step 4: Similarity Scoring & Ranking
+
+- Compute **cosine similarity** between:
+  - Query embedding
+  - Section embeddings
+- Collect metadata: `document`, `section_title`, `page_number`, `full_content`, `similarity_score`
+- Sort descending by relevance → assign `importance_rank`.
+
+---
+
+### 🔹 Step 5: Sub‑Section Refinement (Optional)
+
+- For top N sections:
+  - Split into paragraphs or chunks.
+  - Re-encode and re-rank.
+  - Return the most relevant sub-section → `refined_text`.
+
+---
+
+### 🔹 Step 6: Output Assembly
+
+Final output JSON includes:
+
 - `document`
 - `page_number`
 - `section_title`
 - `full_content`
 - `relevance_score`
 - `importance_rank`
-- `refined_text` (if available)
+- `refined_text` *(if available)*
 
-## Output Format Example  
+---
+
+## 🧾 Output Format Example
+
 ```json
 [
   {
@@ -67,61 +110,68 @@ We assemble a JSON array of ranked sections and refined sub‑sections, each ent
     "relevance_score": 0.92,
     "importance_rank": 1,
     "refined_text": "Try quinoa salad with roasted vegetables…"
-  },
-  ...
+  }
+  // ...
 ]
-````
+```
+
+---
 
 ## Requirements
 
-Contents of `requirements.txt`:
+**`requirements.txt`** contains:
 
 ```
 sentence-transformers
 torch
 scipy
 PyMuPDF
+...
 ```
 
-Install locally with:
+Install locally using:
 
-```
+```bash
 pip install --no-cache-dir -r requirements.txt
 ```
 
-## Dockerfile
+---
+
+## 🐳 Dockerfile
 
 ```dockerfile
 FROM python:3.11-slim
+
 WORKDIR /app
 COPY . /app
 RUN pip install --no-cache-dir -r requirements.txt
+
 CMD ["python", "src/main_1b.py"]
 ```
 
-## Build and Run Instructions
+---
+
+## 🚀 Build & Run Instructions
 
 1. Place your PDF files in `input/`.
-2. Ensure the embedding model folder `models/multi-qa-MiniLM-L6-cos-v1` is present.
+2. Ensure the embedding model exists at `models/multi-qa-MiniLM-L6-cos-v1/`.
 3. Build the Docker image:
 
-   ```
-   docker build --platform linux/amd64 -t mysolution:1b .
-   ```
+```bash
+docker build --platform linux/amd64 -t mysolution:1b .
+```
+
 4. Run the container:
 
-   ```
-    docker run --rm -v $PWD/input:/app/input/ -v $PWD/output:/app/output --network none mysolution:1b
-   ```
+```bash
+docker run --rm -v $PWD/input:/app/input/ -v $PWD/output:/app/output --network none mysolution:1b
+```
+
+---
 
 ## Constraints Met
 
-* Offline execution: All models pre‑downloaded and bundled locally.
-* CPU‑only: Uses CPU version of PyTorch.
-* Fast inference: Small embedding model.
-* Dockerized: Runs fully in container with no network access.
-
-```
-```
-
-
+- ✅ **Offline execution**: All models are pre-downloaded.
+- ✅ **CPU-only**: Uses CPU version of PyTorch.
+- ✅ **Fast inference**: Lightweight embedding model.
+- ✅ **Dockerized**: Fully contained execution with no internet access.
