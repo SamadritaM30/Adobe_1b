@@ -1,0 +1,17 @@
+{
+    "body_text_size": 12.0,
+    "feature_columns": [
+        "relative_font_size",
+        "is_bold",
+        "is_italic",
+        "text_length",
+        "word_count",
+        "is_all_caps",
+        "contains_colon",
+        "ends_with_punctuation",
+        "starts_with_numbering",
+        "is_centered",
+        "space_before",
+        "normalized_y0"
+    ]
+}
