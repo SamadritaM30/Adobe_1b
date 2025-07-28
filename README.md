@@ -90,7 +90,6 @@ Final output JSON includes:
     "importance_rank": 1,
     "refined_text": "Try quinoa salad with roasted vegetables…"
   }
-  // ...
 ]
 ```
 
@@ -115,7 +114,7 @@ pip install --no-cache-dir -r requirements.txt
 
 ---
 
-## 🐳 Dockerfile
+## Dockerfile
 
 ```dockerfile
 FROM python:3.11-slim
@@ -129,7 +128,7 @@ CMD ["python", "src/main_1b.py"]
 
 ---
 
-## 🚀 Build & Run Instructions
+## Build & Run Instructions
 
 1. Place your PDF files in `input/`.
 2. Ensure the embedding model exists at `models/multi-qa-MiniLM-L6-cos-v1/`.
