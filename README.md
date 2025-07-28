@@ -11,27 +11,6 @@ Given a collection of **PDF documents**, a **persona**, and a **job-to-be-done**
 
 ---
 
-##  Project Structure
-
-```
-1b/
-├── input/                         # Input PDF files
-├── models/                        # Downloaded SentenceTransformer model
-│   └── multi-qa-MiniLM-L6-cos-v1/ # Local embedding model files
-├── output/                        # Output JSON files
-├── src/
-│   ├── main_1b.py                 # Pipeline entry point
-│   ├── relevance_engine/
-│   │   └── engine.py              # RelevanceEngine class
-│   └── structure_extractor/
-│       └── extractor.py           # StructureExtractor from Round 1A
-├── requirements.txt               # Python dependencies
-├── Dockerfile                     # CPU-only offline Docker execution
-└── README.md                      # This file
-```
-
----
-
 ## ⚙Approach Explanation
 
 ### 🔹 Step 1: Structure Extraction
@@ -167,7 +146,26 @@ docker run --rm -v $PWD/input:/app/input/ -v $PWD/output:/app/output --network n
 ```
 
 ---
+##  Project Structure
 
+```
+1b/
+├── input/                         # Input PDF files
+├── models/                        # Downloaded SentenceTransformer model
+│   └── multi-qa-MiniLM-L6-cos-v1/ # Local embedding model files
+├── output/                        # Output JSON files
+├── src/
+│   ├── main_1b.py                 # Pipeline entry point
+│   ├── relevance_engine/
+│   │   └── engine.py              # RelevanceEngine class
+│   └── structure_extractor/
+│       └── extractor.py           # StructureExtractor from Round 1A
+├── requirements.txt               # Python dependencies
+├── Dockerfile                     # CPU-only offline Docker execution
+└── README.md                      # This file
+```
+
+---
 ## Constraints Met
 
 - **Offline execution**: All models are pre-downloaded.
