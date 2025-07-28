@@ -32,7 +32,7 @@ Given a collection of **PDF documents**, a **persona**, and a **job-to-be-done**
 
 ---
 
-## ⚙️ Approach Explanation
+## ⚙Approach Explanation
 
 ### 🔹 Step 1: Structure Extraction
 
@@ -46,9 +46,9 @@ Given a collection of **PDF documents**, a **persona**, and a **job-to-be-done**
 
 - Uses `multi-qa-MiniLM-L6-cos-v1` from **sentence-transformers**.
 - Reasons for choosing:
-  - ✅ Small size (~80 MB)
-  - ✅ Fast CPU inference
-  - ✅ High accuracy for semantic similarity
+  - Small size (~80 MB)
+  - Fast CPU inference
+  - High accuracy for semantic similarity
 - Model is downloaded and included in the `models/` folder → **No internet required**.
 
 ---
@@ -126,7 +126,6 @@ sentence-transformers
 torch
 scipy
 PyMuPDF
-...
 ```
 
 Install locally using:
@@ -171,7 +170,7 @@ docker run --rm -v $PWD/input:/app/input/ -v $PWD/output:/app/output --network n
 
 ## Constraints Met
 
-- ✅ **Offline execution**: All models are pre-downloaded.
-- ✅ **CPU-only**: Uses CPU version of PyTorch.
-- ✅ **Fast inference**: Lightweight embedding model.
-- ✅ **Dockerized**: Fully contained execution with no internet access.
+- **Offline execution**: All models are pre-downloaded.
+- **CPU-only**: Uses CPU version of PyTorch.
+- **Fast inference**: Lightweight embedding model.
+- **Dockerized**: Fully contained execution with no internet access.
